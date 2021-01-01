@@ -2,37 +2,28 @@
 # Package Repository: https://github.com/mij-aur-packages/pyhamcrest
 
 _pypi_pkgname=PyHamcrest
-pkgbase=${_pypi_pkgname,,}
-pkgname=(python{2,}-pyhamcrest)
-pkgver=1.9.0
+pkgname=python-pyhamcrest
+pkgver=2.0.2
 pkgrel=1
 pkgdesc='A framework for writing matcher objects, allowing you to declaratively define "match" rules'
 arch=('any')
 url="https://github.com/hamcrest/PyHamcrest"
 license=('BSD')
-makedepends=(python{2,}-setuptools)
+depends=('python>=3.5')
+makedepends=(python-setuptools)
 source=("https://pypi.python.org/packages/source/P/${_pypi_pkgname}/${_pypi_pkgname}-${pkgver}.tar.gz")
-md5sums=('8b833a3fa30197455df79424f30c8c3f')
+sha256sums=('412e00137858f04bde0729913874a48485665f2d36fe9ee449f26be864af9316')
 
 build() {
-    for pybin in python python2; do
-        _dir="${srcdir}/${pybin}-${_pypi_pkgname}-${pkgver}"
-        mkdir -p "${_dir}"
-        cd "${_dir}"
-        cp -r "${srcdir}/${_pypi_pkgname}-${pkgver}"/. .
-        ${pybin} setup.py build
-    done
+    _dir="${srcdir}/python-${_pypi_pkgname}-${pkgver}"
+    mkdir -p "${_dir}"
+    cd "${_dir}"
+    cp -r "${srcdir}/${_pypi_pkgname}-${pkgver}"/. .
+    python setup.py build
 }
 
-_package() {
-    pybin=$1
-    depends=(${pybin})
-    cd "${srcdir}/${pybin}-${_pypi_pkgname}-${pkgver}"
-    ${pybin} setup.py install --root="${pkgdir}" --optimize=1
+package() {
+    cd "${srcdir}/python-${_pypi_pkgname}-${pkgver}"
+    python setup.py install --root="${pkgdir}" --optimize=1
     install -D -m644 LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
-
-for _name in "${pkgname[@]}"; do
-    _splitname=(${_name//-/ }) # For retriving the python version needed
-    eval "package_${_name}() { _package ${_splitname[0]}; }"
-done
